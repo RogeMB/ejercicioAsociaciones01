@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -77,14 +79,10 @@ public class MainDeMentira {
 
         productoService.save(sadowskyMetroFive);
 
-        // productoService.delete(sadowskyMetroFive);
-        // categoriaService.delete(jbFiveString);
 
-
-        if(!jbFourString.getProductoList().isEmpty()){
-            System.out.println("Categoria: " + jbFourString.getNombre());
-            jbFourString.getProductoList().forEach(System.out::println);
-        }
+       productoService.delete(sadowskyMetroFive);
+       categoriaService.delete(jbFiveString);
+       // categoriaService.delete(jazzBass);
 
     }
 

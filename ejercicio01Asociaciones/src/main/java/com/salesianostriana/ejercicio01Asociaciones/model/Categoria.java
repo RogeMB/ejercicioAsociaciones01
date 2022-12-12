@@ -21,6 +21,7 @@ public class Categoria {
 
     private String nombre;
 
+    @Builder.Default
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
     private List<Producto> productoList = new ArrayList<>();
 
@@ -29,8 +30,23 @@ public class Categoria {
     private Categoria categoriaPadre;
 
     @Builder.Default
-    @OneToMany(mappedBy = "categoriaPadre")
+    @OneToMany(mappedBy = "categoriaPadre", cascade = CascadeType.ALL)
     private List<Categoria> subCategorias = new ArrayList<>();
+
+
+    @PreRemove
+    public void preremoveProducts() {
+        productoList.forEach(producto -> producto.setCategoria(null));
+        if(this.getCategoriaPadre() != null) {
+            this.getCategoriaPadre().getSubCategorias().remove(this);
+        }
+        if(!this.getSubCategorias().isEmpty()){
+            this.getSubCategorias().forEach(categoria -> {
+                categoria.setCategoriaPadre(null);
+            });
+        }
+    }
+
 
     public void addSubcategoria(Categoria c) {
         subCategorias.add(c);
@@ -38,6 +54,7 @@ public class Categoria {
     }
 
     public void removeSubcategoria(Categoria c) {
+        this.productoList.forEach(producto -> producto.setCategoria(null));
         subCategorias.remove(c);
         c.setCategoriaPadre(null);
     }
@@ -48,6 +65,7 @@ public class Categoria {
     }
 
     public void removeCategoriaPadre(Categoria c) {
+        this.productoList.forEach(producto -> producto.setCategoria(null));
         this.setCategoriaPadre(null);
         c.getSubCategorias().remove(this);
     }
