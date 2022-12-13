@@ -87,4 +87,16 @@ public class MainDeMentira {
     }
 
 
+    public void printCat (Categoria raiz) {
+        String ms = (raiz.getCategoriaPadre() != null ? "Categoria Padre: " + raiz.getCategoriaPadre() : null);
+        ms += "Categoria: " + raiz.getNombre();
+
+        System.out.println(ms);
+
+        if(raiz.getSubCategorias() != null && raiz.getSubCategorias().size() > 0) {
+            raiz.getSubCategorias().forEach(this::printCat);
+        }
+
+    }
+
 }

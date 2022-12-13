@@ -2,6 +2,8 @@ package com.salesianostriana.ejercicio01Asociaciones.model;
 
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -22,18 +24,24 @@ public class Categoria {
     private String nombre;
 
     @Builder.Default
-    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.EAGER) //por defecto aquí es lazy en los onetomany
+    //@Fetch(FetchMode.JOIN)
     private List<Producto> productoList = new ArrayList<>();
 
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_padre", foreignKey = @ForeignKey(name = "FK_CATEGORIAPADRE_SUBCATEGORIA"))
     private Categoria categoriaPadre;
 
     @Builder.Default
-    @OneToMany(mappedBy = "categoriaPadre", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "categoriaPadre", cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
     private List<Categoria> subCategorias = new ArrayList<>();
 
 
+    @PreRemove
+    public void setNullSubCategoria(){
+        subCategorias.forEach(categoria -> categoria.setCategoriaPadre(null));
+    }
     @PreRemove
     public void preremoveProducts() {
         productoList.forEach(producto -> producto.setCategoria(null));
@@ -59,14 +67,15 @@ public class Categoria {
         c.setCategoriaPadre(null);
     }
 
-    public void addCategoriaPadre(Categoria c) {
-        this.setCategoriaPadre(c);
+    public void addToCategoriaPadre(Categoria c) {
+        //this.setCategoriaPadre(c);
+        categoriaPadre=c;
         c.getSubCategorias().add(this);
     }
-
-    public void removeCategoriaPadre(Categoria c) {
+    public void removeFromCategoriaPadre(Categoria c) {
         this.productoList.forEach(producto -> producto.setCategoria(null));
-        this.setCategoriaPadre(null);
+        categoriaPadre=null;
+        //this.setCategoriaPadre(null);
         c.getSubCategorias().remove(this);
     }
 

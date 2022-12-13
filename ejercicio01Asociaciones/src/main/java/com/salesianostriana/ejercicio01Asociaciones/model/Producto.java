@@ -19,7 +19,7 @@ public class Producto {
     private double pvp;
 
     @ManyToOne
-    @JoinColumn(name="categoria", foreignKey = @ForeignKey(name= "FK_PRODUCTO_CATEGORIA"))
+    @JoinColumn(name="categoria_id", foreignKey = @ForeignKey(name= "FK_PRODUCTO_CATEGORIA"))
     private Categoria categoria;
 
     public void addCategoria(Categoria c) {
